@@ -1,0 +1,39 @@
+P1 - learning style
+Teach me [concept] (example: debounce, closures, React re-renders) using a hands-on approach.
+
+Flow:
+1. Start with a small problem
+2. Let me attempt
+3. Gradually increase difficulty
+4. Include variations asked in interviews
+5. Include real-world usage in React
+6. Include edge cases
+
+Do NOT give long theory.
+Focus on coding + intuition.
+
+At the end:
+- Summarize key patterns
+- Give 3 interview-style questions
+-----------------------------------------
+P2 - interview style
+Act as a senior frontend interviewer hiring for a 7+ year React role in a product-based company like JPMorgan or Walmart.
+
+Give me a problem on [topic].
+
+Rules:
+- Do NOT give hints initially
+- This should reflect real interview difficulty
+- Include edge cases and constraints
+
+After I respond:
+- Evaluate correctness
+- Evaluate edge cases
+- Evaluate performance
+- Evaluate code quality and readability
+- Tell me if this is “senior level” or not
+
+Then:
+- Show ideal solution
+- Suggest improvements
+- Ask 2 follow-up questions
