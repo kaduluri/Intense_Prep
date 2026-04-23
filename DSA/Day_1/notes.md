@@ -7,10 +7,11 @@ Prefix sum is a pattern which involves in **preprocessing** an array to create a
 - Multiple sum queries on subarray
 - Finding subarrays with target sum
 - Calculating cummulative totals
+- Whenever you see the words "Sum of Range," "Sub-array Sum," or "Average of a window."
 
 ```
 //Template
-// Build prefix sum array
+// Build prefix sum array Java
 int[] prefix = new int[n + 1];
 for (int i = 0; i < n; i++) {
     prefix[i + 1] = prefix[i] + nums[i];
