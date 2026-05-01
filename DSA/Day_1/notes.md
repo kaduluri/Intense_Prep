@@ -2,7 +2,7 @@
 ---
 ##### Prefix Sum
 ![Prefix Sum](Prefix_sum.PNG)
-Prefix sum is a pattern which involves in **preprocessing** an array to create a new array where each element at index i represents sum of all elemnts from the start upto i.This allows for **O(1) sum queries** on any subarray
+Prefix sum is a pattern which involves in **preprocessing** an array to create a new array where each element at index i represents sum of all elemnts from the start upto i.This allows for **O(1) sum queries** on any subarray.
 *When to Use*
 - Multiple sum queries on subarray
 - Finding subarrays with target sum
@@ -45,3 +45,91 @@ You just point at the very first post.
 
 *The Natural Realization:*
 In any sequence of $N$ items, there are always $N+1$ boundaries between them (including the very start and the very end). Prefix sum arrays simply track the values at those boundaries rather than inside the items themselves.
+
+---
+##### 2 Pointer
+![2 Pointer](2Pointer.PNG)
+Two pointer pattern involves having 2 pointers to traverse an array or list ,typically from opposite ends or both moving in the same direction.It reduces time complexity from **O(n^2) to O(n)** for many array/string problems.
+*When to Use*
+- Finding pairs in sorted array
+- Comparing elements from both ends
+- Partitioning arrays
+- Palindrome checks.
+
+```
+//Java
+// Opposite direction (converging)
+int left = 0, right = n - 1;
+while (left < right) {
+    if (condition_met) {
+        // found answer
+    } else if (need_larger_sum) {
+        left++;
+    } else {
+        right--;
+    }
+}
+
+// Same direction
+int slow = 0;
+for (int fast = 0; fast < n; fast++) {
+    if (condition) {
+        // process and move slow
+        slow++;
+    }
+}
+```
+
+*The Logic:* 
+- Why Move Left or Right?
+This specific logic applies when you are looking for a Target Sum in a sorted array. We place one pointer (left) at the beginning and one pointer (right) at the end.
+1. When Current Sum > Target Sum: 
+Move the Right PointerIf your current sum is too large, you need to decrease it. Since the array is sorted, the largest values are on the right. Moving the right pointer one step to the left ($right--$) replaces a larger number with a smaller one, effectively lowering the total sum.
+2. When Current Sum < Target Sum: 
+Move the Left PointerIf your current sum is too small, you need to increase it. The smallest values are on the left. Moving the left pointer one step to the right ($left++$) replaces a smaller number with a larger one, increasing the total sum.
+
+*To use this technique effectively, you need to verify these three pillars*:
+1. The Pre-requisite: Sorting
+The "increase/decrease" logic only works if the data is sorted. If the array isn't sorted, moving a pointer doesn't guarantee the sum will change in the direction you want.
+Time Complexity Note: Sorting takes $O(n \log n)$. If the array is already sorted, the two-pointer part is $O(n)$.
+2. The Loop Condition
+The pointers should never cross. Your loop usually looks like:
+` while (left < right) { ... } `
+If they meet or cross, you’ve exhausted all possible pairs without finding the target.
+
+---
+##### Sliding Window
+![Sliding Window](Sliding_window.PNG)
+The Sliding Window pattern maintains a window of elements and slides it acroos the array to find subArrays or subStrings that satisfies certain conditions.It avoids recalcuating overlapping parts of consecutive windows.
+*When to Use*
+- Problems involving consecutive Elements
+- Longest/Shortest substring with certain properties
+- Finding Maximum/Minimum in window of size k
+- Contiguous substring/subarray problems.
+
+```
+//Java
+// Fixed-size window
+int windowSum = 0;
+for (int i = 0; i < n; i++) {
+    windowSum += nums[i];
+    if (i >= k - 1) {
+        // process window
+        result = Math.max(result, windowSum);
+        windowSum -= nums[i - k + 1];
+    }
+}
+
+// Variable-size window
+int left = 0;
+for (int right = 0; right < n; right++) {
+    // expand window by including nums[right]
+
+    while (window_condition_violated) {
+        // shrink window from left
+        left++;
+    }
+
+    // update result
+}
+```
