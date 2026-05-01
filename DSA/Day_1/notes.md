@@ -2,6 +2,7 @@
 ---
 ##### Prefix Sum
 ![Prefix Sum](Prefix_sum.PNG)
+
 Prefix sum is a pattern which involves in **preprocessing** an array to create a new array where each element at index i represents sum of all elemnts from the start upto i.This allows for **O(1) sum queries** on any subarray.
 *When to Use*
 - Multiple sum queries on subarray
@@ -49,6 +50,7 @@ In any sequence of $N$ items, there are always $N+1$ boundaries between them (in
 ---
 ##### 2 Pointer
 ![2 Pointer](2Pointer.PNG)
+
 Two pointer pattern involves having 2 pointers to traverse an array or list ,typically from opposite ends or both moving in the same direction.It reduces time complexity from **O(n^2) to O(n)** for many array/string problems.
 *When to Use*
 - Finding pairs in sorted array
@@ -100,6 +102,7 @@ If they meet or cross, you’ve exhausted all possible pairs without finding the
 ---
 ##### Sliding Window
 ![Sliding Window](Sliding_window.PNG)
+
 The Sliding Window pattern maintains a window of elements and slides it acroos the array to find subArrays or subStrings that satisfies certain conditions.It avoids recalcuating overlapping parts of consecutive windows.
 *When to Use*
 - Problems involving consecutive Elements
@@ -133,3 +136,35 @@ for (int right = 0; right < n; right++) {
     // update result
 }
 ```
+
+1. Fixed-Size Window: 
+The "Subway Turnstile" Analogy
+Imagine a Subway Train that can only fit exactly 3 people ($k=3$). 
+The train moves along a platform of people.
+The Logic: As the train moves one spot forward, one new person enters the front door, and 
+one person must exit the back door to keep the capacity at exactly 3.
+The Code Mental Model:
+windowSum += nums[i]: 
+The person at the front enters the train.
+if (i >= k - 1): 
+We don't start "processing" until the train is full (e.g., if $k=3$, we wait until index 2).
+windowSum -= nums[i - k + 1]: 
+Before the train moves to the next person, the person who has been in the train the longest exits from the back.
+2. Variable-Size Window: 
+The "Accordion" AnalogyImagine an Accordion or a Rubber Band. 
+This window isn't stuck at one size; it expands and contracts based on a rule (the "condition").
+The Logic:
+ You keep stretching the accordion to the right to include more notes. If the sound becomes "distorted" (condition violated), you must pull the left side in to shorten it until the sound is clear again.
+ The Code Mental Model:
+ for (int right = 0; ...): 
+ The Right Hand stretches the accordion out, adding one element at a time.
+ while (condition_violated): 
+ The Left Hand starts dragging the back end forward. It doesn't just move once; it keeps moving until the condition is happy again.
+ left++: 
+ This is the left hand catching up to fix the "distortion."
+
+| **Feature** | **Fixed-Size** | **Variable-Size** |
+| --- |  --- |  --- |
+| **Trigger** | "Find the max sum of **exactly** K elements." | "Find the longest subarray with **at most** K unique elements." |
+| **The "Left" Pointer** | Moves automatically once the window is full ($i - k + 1$). | Moves only when a specific rule is broken. |
+| **Window State** | Constant size. | Elastic size (grows and shrinks). |

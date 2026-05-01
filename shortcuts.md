@@ -1,0 +1,12 @@
+- Markdown paste                    = Ctrl + Alt + V
+- Markdown paste code               = Ctrl + Alt + C
+- Markdown Bold                     = Ctrl + B
+- Markdown Italic                   = Ctrl + I
+- Markdown Code Block               = Ctrl + / B
+- Markdown Code Span                = Ctrl + / S
+- Markdown Insert Img Frm Workspace = Ctrl + / I
+- Markdown Preview                  = Ctrl + Shift + V
+- Markdown Side Preview             = Ctrl + K V
+- Markdown Toggle Header Down       = Ctrl + Shift + [
+- Markdown Toggle Header UP         = Ctrl + Shift + ]
+
