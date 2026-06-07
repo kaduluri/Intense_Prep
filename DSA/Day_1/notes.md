@@ -23,8 +23,8 @@ int rangeSum = prefix[right + 1] - prefix[left];
 ```
 The Fence Post Analogy
 Imagine you are building a fence. You have 3 wooden panels (nums). To hold those panels up, you need 4 fence posts (prefix).Panel 0 is between Post 0 and Post 
-1. Panel 1 is between Post 1 and Post 
-2. Panel 2 is between Post 2 and Post 
+1. Panel 1 is between Post 1 and Post 2
+2. Panel 2 is between Post 2 and Post 3
 3. Each Post represents the total amount of wood used up to that point.
 1. Why $n + 1$?
 If you have 3 panels ($n=3$), you naturally have 4 posts ($n+1$). You can't have a fence without a starting post!
@@ -47,6 +47,99 @@ You just point at the very first post.
 *The Natural Realization:*
 In any sequence of $N$ items, there are always $N+1$ boundaries between them (including the very start and the very end). Prefix sum arrays simply track the values at those boundaries rather than inside the items themselves.
 
+---
+Another version of prefix sum
+Here is the ultimate cheat sheet for your revision. It is written in plain, simple language, uses a concrete example, and links the math directly to the fence post diagram so it sticks instantly.
+
+Prefix Sum Cheat Sheet (The Fence Post Model)
+---------------------------------------------
+
+### What is it?
+
+Instead of tracking values *inside* the array elements (panels), you track the accumulated totals at the **boundaries** (the fence posts) between them.
+
+### Why use it?
+
+If an interviewer asks you for range sums over and over, looping through the array every time takes $O(N)$ time. By building the fence **once** ($O(N)$), you can look up the sum of *any* section instantly in **$O(1)$** time.
+
+The Visual Example
+------------------
+
+Let's use an array with 3 panels: `nums = [5, 3, 8]` (so $n = 3$).
+
+To hold up 3 panels, you need **4 posts** ($n + 1$).
+
+Plaintext
+
+```
+       Post 0         Post 1         Post 2         Post 3
+         |              |              |              |
+         |  --Panel 0-- |  --Panel 1-- |  --Panel 2-- |
+         |     (5)      |     (3)      |     (8)      |
+
+prefix: [0,             5,             8,             16]
+
+```
+
+-  **Post 0:** Total wood used *before* the fence starts = **0**
+-  **Post 1:** Total wood used up to Panel 0 = **5**
+-  **Post 2:** Total wood used up to Panel 1 ($5 + 3$) = **8**
+-  **Post 3:** Total wood used up to Panel 2 ($5 + 3 + 8$) = **16**
+
+The Code Template
+-----------------
+
+Java
+
+```
+// 1. Build the prefix array (Size is n + 1)
+int[] prefix = new int[n + 1];
+for (int i = 0; i < n; i++) {
+    prefix[i + 1] = prefix[i] + nums[i];
+}
+
+// 2. Query any range [left, right]
+int rangeSum = prefix[right + 1] - prefix[left];
+
+```
+
+The 3 Simple "Whys"
+-------------------
+
+### 1\. Why `prefix[i + 1]` in the loop?
+
+Because **Posts are always one step ahead of the Panels**.
+
+To calculate the weight at **Post 1** ($i + 1$), you take the weight at **Post 0** (`prefix[i]`) and add **Panel 0** (`nums[i]`).
+
+### 2\. Why `prefix[0] = 0` (The Guardrail Superpower)?
+
+It represents the starting post before any wood is used.
+
+If someone asks for a range starting at the very beginning (`left = 0`), your formula subtracts `prefix[0]` (which is `0`). The math handles the edge case automatically, so **you never need an `if` statement** to prevent negative index crashes!
+
+### 3\. Why `prefix[right + 1] - prefix[left]`?
+
+Say you want the sum of **Panel 1** and **Panel 2** (`left = 1`, `right = 2`).
+
+Look at the diagram to see what boxes that section in:
+
+-   The section ends right *after* Panel 2 $\\rightarrow$ This is **Post 3** (`right + 1`).
+
+-   The section starts right *before* Panel 1 $\\rightarrow$ This is **Post 1** (`left`).
+
+To find the wood between them, take the total wood at Post 3 and chop off the wood used up to Post 1:
+
+$$\\text{prefix}\[3\] - \\text{prefix}\[1\] \\implies 16 - 5 = 11$$
+
+When to use it (Interview Keywords)
+-----------------------------------
+
+-   "Sum of a range `[left, right]`" or "Subarray sum" with multiple queries.
+
+-   "Find a continuous sequence/window" that equals a target sum.
+
+-   "Cumulative totals" or "running balances".
 ---
 ### 2 Pointer
 ![2 Pointer](2Pointer.PNG)

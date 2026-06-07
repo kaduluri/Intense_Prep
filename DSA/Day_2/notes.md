@@ -380,3 +380,138 @@ Binary Tree Traversal visits all nodes in a specific order. The three main order
 - Building trees from traversals
 - BST operations (inorder gives sorted order)
 - Tree serialization/deserialization
+
+**1\. What is a Tree in Data Structures?**
+In programming, a **Tree** is just a way to organize data hierarchically, rather than in a straight line (like an array or a list).
+Instead of growing upwards from the ground, programming trees are actually drawn **upside down**---the starting point is at the very top, and the branches grow downwards.
+**The Vocabulary:**
+- **Root:** The single starting point at the absolute top of the tree (like the CEO of a company).
+- **Node:** Every single data container/box in the tree. The Root is a node, and every branch leads to another node.
+- **Parent & Child:** If Node A connects down to Node B, Node A is the **Parent**, and Node B is the **Child**.
+- **Binary Tree:** A specific type of tree where every parent node can have **at most 2 children** (usually called the **Left Child** and the **Right Child**).
+- **Leaf:** A node at the very bottom that has zero children (the end of the line).
+**2\. The Traversal Analogy: The "Kingdom Explorer"**
+**Traversal** simply means "visiting every single room (node) in the tree exactly once."
+Imagine a massive, symmetrical kingdom shaped like a triangle. The King sits at the top (**Root**). The kingdom splits cleanly into a **Left Wing** and a **Right Wing**. You are an explorer hired to map this kingdom.
+Because computers work using **Recursion** (a function that calls itself), your exploration strategy always follows a strict golden rule:
+> *You cannot fully finish mapping a territory until you have completely explored its left side and its right side.*
+Depending on **when** you decide to write down your official report about a castle while standing inside it, you get three different "orders" of traversal.
+**3\. Detailed Code Breakdown**
+Let's look at the three code snippets you provided. Notice that the structural code is **exactly identical** for all three---the only thing that changes is the *position* of the line `process(node);` (which means "write down the report for this room").
+*A. Preorder Traversal (Root $\\rightarrow$ Left $\\rightarrow$ Right)*
+**The Strategy:** You write the report the *very second* you step through the castle front door, before looking at its wings.
+Java
+```
+void preorder(TreeNode node) {
+    // 1. The Dead End: If the room doesn't exist, turn back.
+    if (node == null) return;
+
+    // 2. Process Root: Write the report for THIS castle immediately.
+    process(node);
+
+    // 3. Move Left: Send a scout to completely map the entire Left Wing.
+    preorder(node.left);
+
+    // 4. Move Right: Once the left wing is 100% done, map the Right Wing.
+    preorder(node.right);
+}
+
+```
+- **Mental Model:** Top-Down mapping. You record parents before children.
+*B. Inorder Traversal (Left $\\rightarrow$ Root $\\rightarrow$ Right)*
+**The Strategy:** You walk into the castle, ignore the King for a second, go map his entire Left Wing, come back to the throne room to write his report, and then go map his Right Wing.
+Java
+```
+void inorder(TreeNode node) {
+    if (node == null) return;
+
+    // 1. Move Left: Drill all the way down to the leftmost territory first.
+    inorder(node.left);
+
+    // 2. Process Root: Now write the report for this specific castle.
+    process(node);
+
+    // 3. Move Right: Go explore the Right Wing.
+    inorder(node.right);
+}
+
+```
+- **The Magic Property:** If you run an **Inorder Traversal** on a Binary *Search* Tree (a tree where left numbers are smaller and right numbers are bigger), it will output the numbers in **perfect, sorted ascending order**.
+*C. Postorder Traversal (Left $\\rightarrow$ Right $\\rightarrow$ Root)*
+**The Strategy:** You are a cautious explorer. You refuse to write a report on the main castle until you have completely mapped out its Left Wing AND its Right Wing first.
+Java
+```
+void postorder(TreeNode node) {
+    if (node == null) return;
+
+    // 1. Move Left: Map the left sub-territory completely.
+    postorder(node.left);
+
+    // 2. Move Right: Map the right sub-territory completely.
+    postorder(node.right);
+
+    // 3. Process Root: Finally, write the report for this castle.
+    process(node);
+}
+
+```
+- **Mental Model:** Bottom-Up collection. This is perfect for tasks like **deleting a tree** (you must delete the children before deleting the parent so you don't lose the connection) or calculating the total size of a file directory.
+**4\. Step-by-Step Visualization**
+Imagine a small tree that looks like this:
+
+    ```
+    1 (Root)
+   /\
+  2   3
+
+```
+Here is what the three traversals will output:
+
+| **Traversal Type** | **Order of Operations** | **Final Output** |
+| --- |  --- |  --- |
+| **Preorder** | Record `1` $\\rightarrow$ Go Left to `2` (Record `2`) $\\rightarrow$ Go Right to `3` (Record `3`) | `[1, 2, 3]` |
+| **Inorder** | Go Left to `2` (Record `2`) $\\rightarrow$ Back to `1` (Record `1`) $\\rightarrow$ Go Right to `3` (Record `3`) | `[2, 1, 3]` |
+| **Postorder** | Go Left to `2` (Record `2`) $\\rightarrow$ Go Right to `3` (Record `3`) $\\rightarrow$ Back to `1` (Record `1`) | `[2, 3, 1]` |
+**5\. The "Nail Down" Interview Summary**
+- **When to use Tree Traversals:** These are the building blocks of almost all tree problems. If a problem asks you to search, copy, delete, or print a tree, you will use one of these three.
+- **Time Complexity:** Always **$O(n)$**, where $n$ is the total number of nodes in the tree. Why? Because the computer must visit every single node exactly once.
+- **Space Complexity:** **$O(h)$**, where $h$ is the height of the tree. This space is taken up on the system's internal call stack due to recursion.
+**6\. Quick Cheat Sheet**
+| **Traversal** | **Sequence** | **Best Used For** |
+| --- |  --- |  --- |
+| **Preorder** | **Root** $\\rightarrow$ Left $\\rightarrow$ Right | Copying/cloning a tree structure. |
+| **Inorder** | Left $\\rightarrow$ **Root** $\\rightarrow$ Right | Getting elements in sorted order from a BST. |
+| **Postorder** | Left $\\rightarrow$ Right $\\rightarrow$ **Root** | Deleting nodes, calculating tree height/size. |
+
+---
+
+### Depth first Search
+![DFS](dfs.PNG)
+
+DFS explores as deep as possible along each branch before backtracking. It uses a stack (or recursion) to remember which nodes to visit next.
+*When to use*
+- Exploring all paths in a tree/graph
+- Finding connected components
+- Detecting cycles
+- Topological sorting
+- Path finding when all paths matter
+
+Java
+```
+// DFS on a graph - visited tracking required
+void dfs(int node, boolean[] visited, List<List<Integer>> graph) {
+    visited[node] = true;
+
+    // Process current node
+    process(node);
+
+    // Explore unvisited neighbors
+    for (int neighbor : graph.get(node)) {
+        if (!visited[neighbor]) {
+            dfs(neighbor, visited, graph);
+        }
+    }
+}
+```
+### Breadth first Search
+![BFS](bfs.PNG)
