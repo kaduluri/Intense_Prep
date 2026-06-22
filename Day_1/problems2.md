@@ -1,4 +1,161 @@
+```js
+//----------------------------------------------
 
+//3. Write `once(fn)` decorator.
+//This func ensures a piece of code or func to execute only once and then return the cached output the next time 
+//This is similar to usememo hook in react
+
+function threeOnce(fn){
+    let firstTime= true;
+    let result;
+    return function(...args){
+        if(firstTime){
+            firstTime = false;
+            result = fn(...args);
+          }
+        return result;
+    }
+}
+
+/*const threeOnceTest = threeOnce(function (){
+    console.log("First time calling");
+    return 99;
+});*/
+//console.log(threeOnceTest());
+//console.log(threeOnceTest());
+
+//---------------------------------------------
+
+//4. Write `curry(fn)` for fixed arity.
+//Currying is a functional programming technique that transforms a function 
+//with multiple arguments into a sequence of nesting functions, 
+//each taking a single argument. 
+//Instead of taking all inputs at once, a curried function accepts the first argument
+//, returns a new function that accepts the second argument, and continues this
+//pattern until all parameters are supplied.
+
+function fourCurry (fn){
+    const arity = fn.length;
+    return function curriedFn(...args){
+        if(args.length >= arity){
+            return fn(...args)
+        }
+        else {
+            return function (...moreArgs){
+                return curriedFn( ...args,...moreArgs);
+            }
+        }
+    }
+}
+
+//var addFour = fourCurry((a,b,c)=>a+b+c);
+//addFour(2)(3)(4);
+
+//------------------------------
+
+//5. Write `debounce(fn, delay)`.
+//every new call cancels the previous timer and starts a fresh one.
+function fiveDebounce(fn,delay){
+    let timerId;
+    return function (...args){
+        clearTimeout(timerId);
+        timerId = setTimeout(() => {
+            fn.apply(this,args)
+        },delay)
+    }
+}
+function fivesearch(val) {
+    console.log("search fired with:", val);  // side effect so you can see it run
+}
+//const fiveHandleSearch = fiveDebounce(fivesearch, 300);
+// Simulate rapid calls — only last one should fire
+//fiveHandleSearch(10);   // scheduled, then cancelled
+//fiveHandleSearch(20);   // scheduled, then cancelled  
+//fiveHandleSearch(30);   // scheduled — this one survives
+
+//------------------------------------
+
+//6. Write `throttle(fn, delay)`.
+function sixThrottle(fn,delay){
+    let lastExecutedDate = 0;
+    return function(...args){
+        const curTime = Date.now();
+        const curDelay = curTime - lastExecutedDate;
+        if(curDelay >= delay){
+            lastExecutedDate = curTime;
+            return fn.apply(this,args);
+        }
+    }
+}
+
+//with cancel
+function sixThrottle2(fn, delay) {
+  let lastExecutedDate = 0;
+  let timer = null;
+
+  function throttled(...args) {
+    const curTime = Date.now();
+    const curDelay = curTime - lastExecutedDate;
+    if (curDelay >= delay) {
+      lastExecutedDate = curTime;
+      return fn.apply(this, args);
+    }
+  }
+  // Attach cancel directly onto the returned function
+  throttled.cancel = function () {
+    clearTimeout(timer);   // Kill any pending trailing call
+    timer = null;
+    lastExecutedDate = 0;  // Reset clock → next call fires immediately
+  };
+
+  return throttled;
+}
+
+//for trailing with last args inside function only
+function throttleTrailing(fn, delay) {
+  let timer = null;
+    return function (...args) {
+      latestArgs = args;        // always capture latest
+      if (!timer) {
+        timer = setTimeout(() => {
+          fn.apply(this, latestArgs);  // use latest, not first
+          timer = null;
+        }, delay);
+      }
+    };
+}
+
+//-----------------------------------------
+
+//7. Write `compose(...fns)`.
+
+function sevencompose(...fns){
+    return function(x){
+        return fns.reduceRight((acc,fn) => fn(acc),x);
+        
+    }
+}
+
+//-----------------------------------------
+
+//8. Write pipe(...fns)
+
+function eightPipe(...fns) {
+  return function (x) {
+    return fns.reduce((acc, fn) => fn(acc), x);
+  };
+}
+
+const trim       = str => str.trim();
+const capitalize = str => str[0].toUpperCase() + str.slice(1);
+const exclaim    = str => str + "!";
+
+//const format = eightPipe(trim, capitalize, exclaim);
+//console.log(format("  hello world  ")); // "Hello world!"
+
+//---------------------------------------------
+
+```
 
 This is one of the most important topics in JavaScript --- and also the most commonly misunderstood even at senior level. Let me build it from the ground up, layer by layer.
 
@@ -702,3 +859,81 @@ The complete mental model --- one paragraph
 * * * *
 
 You've now covered the full `this` topic at senior depth. Want to move to the next frontend problem, or do you want me to throw some rapid-fire grilling questions the way an interviewer would --- no explanations, just you answering cold?
+
+---
+1. Return Value
+Right now your throttle returns undefined when the function is dropped (cooldown). When it fires, it also returns undefined because you don't capture fn.apply()'s result.
+The fix is one word — return:
+jsfunction sixThrottle(fn, delay) {
+  let lastExecutedDate = 0;
+  return function (...args) {
+    const curTime = Date.now();
+    const curDelay = curTime - lastExecutedDate;
+    if (curDelay >= delay) {
+      lastExecutedDate = curTime;
+      return fn.apply(this, args); // ← just add return
+    }
+    // dropped calls implicitly return undefined
+  };
+}
+Why does this matter?
+jsconst throttledAdd = throttle((a, b) => a + b, 1000);
+
+const result = throttledAdd(2, 3);
+console.log(result); // Without return: undefined. With return: 5
+In UI work (scroll, resize) you rarely need the return value. But if throttle wraps a pure function someone is calling for its result, dropping the return silently breaks their code. Senior answer: "I'd always add return — zero cost, prevents surprises."
+
+### 2\. Leading vs Trailing Edge
+
+This is the most conceptually rich part. Right now your implementation is **leading edge only** --- fires at the *start* of each cooldown window, drops everything else.
+
+```
+Calls:    ↓  ↓  ↓  ↓  ↓        ↓  ↓  ↓
+          |------ delay ------|  |------ delay ------|
+Leading:  ✅ ✗  ✗  ✗  ✗        ✅ ✗  ✗
+Trailing: ✗  ✗  ✗  ✗  ✅       ✗  ✗  ✅
+Both:     ✅ ✗  ✗  ✗  ✅       ✅ ✗  ✅
+```
+
+#### Trailing edge --- fires at the END of the window
+
+js
+```
+functionthrottleTrailing(fn, delay){let timer =null;returnfunction(...args){if(!timer){// No timer running? Start one      timer =setTimeout(()=>{        fn.apply(this, args);// Fire at end of window        timer =null;// Reset --- ready for next window}, delay);}// If timer exists: we're in cooldown --- dropped};}
+```
+
+> ⚠️ Trailing-only has a subtle bug: `args` is captured from the **first** call in the window, not the last. In practice you'd update `args` on every call. But for interviews, noting this awareness is enough.
+
+### Functions are Objects in JavaScript
+
+This is the key insight you're missing, and it's a beautiful JS quirk.
+
+**In JavaScript, functions ARE objects.** They're a special type of object that happens to be callable. So you can attach properties to them just like any object.
+
+js
+```
+functiongreet(){console.log("hello");}greet.city="Bangalore";// attach a property to a functiongreet.age=25;console.log(greet.city);// "Bangalore"console.log(greet.age);// 25greet();// "hello" --- still callable
+```
+
+`greet` is both a **callable function** AND an **object with properties**. Both at the same time.
+
+* * * *
+
+#### So `throttled.cancel` is just a property on a function
+
+js
+```
+functionsixThrottle(fn, delay){let timer =null;functionthrottled(...args){// named function, not arrow// ... throttle logic}  throttled.cancel=function(){// attach .cancel as a propertyclearTimeout(timer);    timer =null;};return throttled;// return the function WITH .cancel attached}
+```
+
+When you call `sixThrottle(...)`, you get back `throttled` --- which is both:
+
+-   **Callable** → `throttledFn(args)` works
+-   **Has a property** → `throttledFn.cancel()` works
+
+js
+```
+const throttledSave =sixThrottle(saveToServer,2000);throttledSave("data");// calls throttled()throttledSave.cancel();// calls the cancel function attached as property
+```
+
+* * * *
