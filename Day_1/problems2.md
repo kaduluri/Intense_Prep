@@ -157,6 +157,64 @@ const exclaim    = str => str + "!";
 
 ```
 
+```js
+//---------------------------------------------
+
+//9. Write `pick(obj, keys)`.
+
+function ninePick(obj,keys){
+    let pickedObj={};
+    for(const key of keys){
+        if(key in obj){
+           pickedObj[key] = obj[key] ;
+        }
+    }
+    return pickedObj;
+}
+
+//option 2 using reduce
+function ninePick2(obj,keys){
+    return keys.reduce((acc,key) => {
+        if(key in obj){
+            acc[key] = obj[key]
+        }
+        return acc;
+    },{})
+}
+
+//const obj = { a: undefined, b: 2 };
+//"a" in obj          // true  ✅ — key EXISTS, value just happens to be undefined
+//obj["a"] !== undefined  // false ❌ — wrongly concludes key doesn't exist
+
+//--------------------------------------
+
+//10. Write `omit(obj, keys)`.
+function tenOmit(obj,keys){
+    let omittedKeyObj = {};
+    const distinctKeys = new Set(keys);
+    for(const key in obj){
+        if(obj.hasOwnProperty(key) && !distinctKeys.has(key)){
+            omittedKeyObj[key] = obj[key]
+        }
+    }
+    return omittedKeyObj
+}
+
+//option 2
+function tenOmit2(obj,keys){
+    const distinctKeys = new Set(keys); 
+    return obj.reduce((acc,key)=>{
+        if(!distinctKeys.has(key)){
+            acc[key] = obj[key]
+        }
+        return acc;
+    },{})
+}
+
+
+
+```
+
 This is one of the most important topics in JavaScript --- and also the most commonly misunderstood even at senior level. Let me build it from the ground up, layer by layer.
 
 * * * *
