@@ -214,6 +214,35 @@ function tenOmit2(obj,keys){
 
 
 ```
+### Why `new Set(keys)` --- not just `keys.includes(key)`?
+
+js
+```
+// Without Setkeys.includes(key)// O(n) --- scans the array every single iteration// With SetkeySet.has(key)// O(1) --- instant lookup
+```
+
+If `obj` has 1000 keys and `keys` has 100 items --- `includes` does 100,000 comparisons. `Set` does 1000. Small detail, big signal to an interviewer.
+
+* * * *
+
+### `for...in` vs `Object.keys()` --- why `hasOwnProperty` matters
+
+js
+```
+for(const key in obj)// walks OWN + INHERITED prototype keys ⚠️Object.keys(obj)// walks OWN keys only ✅
+```
+
+If you use `for...in`, you must guard with `hasOwnProperty`. If you use `Object.keys`, it's already safe --- your choice in the `reduce` version is cleaner for that reason.
+
+* * * *
+
+### Pick vs Omit side by side
+
+js
+```
+const obj ={a:1,b:2,c:3,d:4};pick(obj,["a","b"]);// → { a: 1, b: 2 }       iterate keys arrayomit(obj,["a","b"]);// → { c: 3, d: 4 }       iterate object
+```
+
 
 This is one of the most important topics in JavaScript --- and also the most commonly misunderstood even at senior level. Let me build it from the ground up, layer by layer.
 
